@@ -20,7 +20,7 @@ pub struct Args {
     pub characters: bool,
 
     /// Input file
-    pub file: String,
+    pub file: Option<String>,
 }
 
 impl Args {

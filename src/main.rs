@@ -2,26 +2,27 @@ mod args;
 mod commands;
 mod utils;
 
+use std::io::{self, Read};
+
 use args::Args;
 use clap::Parser;
-use commands::{bytes_count, characters_count, lines_count, words_count};
-use utils::read_file;
+
+use utils::{process_args, read_file};
 
 fn main() {
     let args = Args::parse();
-    if let Some(file_data) = read_file(&args.file) {
-        if args.lines || args.no_flags_passed() {
-            lines_count(&file_data);
+    match &args.file {
+        Some(file) => {
+            if let Some(file_data) = read_file(&file) {
+                process_args(&args, &file_data);
+                println!(" {}", file);
+            }
         }
-        if args.words || args.no_flags_passed() {
-            words_count(&file_data);
+        None => {
+            let mut input = String::new();
+            io::stdin().read_to_string(&mut input).unwrap();
+            process_args(&args, &input);
+            println!("")
         }
-        if args.bytes || args.no_flags_passed() {
-            bytes_count(&file_data);
-        }
-        if args.characters {
-            characters_count(&file_data);
-        }
-        println!(" {}", args.file);
     }
 }
